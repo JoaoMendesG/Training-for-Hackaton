@@ -1,18 +1,36 @@
-const neDB = require('../configurations/database')
+const { exception } = require('console');
+const { request, response } = require('express');
+const neDB = require('../configurations/database');
+const { route } = require('../configurations/express');
+const app = require('../configurations/express');
 const api = {}
 
 //http://localhost:3000/products > colocar para teste com o verbo GET.
 api.findAll = (request, response) => {
+
     neDB.find({}).sort({name: 1}).exec( (exception, products) => {
         if(exception) {
-            const errorMessegeCustom = 'Error, cannot find all registers';
-            console.log(errorMessegeCustom, exception)
+            const errorMessageCustom = 'Error, cannot find all registers';
+            console.log(errorMessageCustom, exception)
             response.status(exception.status | 400)
-            response.json({'Message': errorMessegeCustom})
+            response.json({'Message': errorMessageCustom})
         }
 
-        response.status(200)
         response.json(products)
+    })
+}
+
+api.findById = (request, response) => {
+
+    neDB.findOne({_id: request.params._id}, (exception, product) => {
+        if(exception) {
+            const errorMessageCustom = 'Error, cannot find the register';
+            console.log(errorMessageCustom, exception)
+            response.status(exception.status | 400)
+            response.json({'Message': errorMessageCustom})
+        }
+
+        response.json(product)
     })
 }
 
